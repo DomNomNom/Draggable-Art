@@ -1,0 +1,33 @@
+html, body{
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+body {
+    background: #333;
+    margin: 0;
+    color: #eee;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#header a[href] {
+    color: steelblue;
+    margin: 5px;
+}
+
+#svg-container {
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+}
+svg {
+    flex-grow: 1;
+}
+

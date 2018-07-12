@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>G9</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="header">
+    <h1>Try dragging stuff around!</h1>
+    <div>
+        How about some more?
+        <a href="?art=blah">blah</a>
+        <a href="?art=nope">nope</a>
+        <a href="?art=CounterRotatingHelix">Counter rotating helix</a>
+    </div>
+</div>
+<div id="svg-container"></div>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/g9/1.0.16/g9.js'></script>
+<script type="module">
+
+const art = (
+    new URLSearchParams(window.location.search).get('art')
+    || 'CounterRotatingHelix'
+);
+
+import {initialData, render} from "./art/CounterRotatingHelix.js"
+g9(initialData, render)
+    .align('center', 'center')
+    .insertInto('#svg-container');
+
+// async function main() {
+//     console.log('a')
+//     const artModule = await import(`./art/${art}.js`);
+//     console.log('b')
+
+//     g9(artModule.initialData, artModule.render)
+//         .align('center', 'center')
+//         .insertInto('#svg-container')
+// }
+// main();
+</script>
+
+</body>
+</html>
+

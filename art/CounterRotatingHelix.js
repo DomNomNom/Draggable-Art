@@ -1,35 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>G9</title>
-</head>
-<body class="full-space">
-<style type="text/css">
-html, body, .full-space svg{
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-}
-body {
-    background: #333;
-    margin: 0;
-}
-/*.full-space {
-    display: flex;
-    align-items: stretch;
-}*/
-</style>
 
-<!-- <div id="g9-container" class="full-space"></div> -->
-
-
-
-<script src='https://cdnjs.cloudflare.com/ajax/libs/g9/1.0.16/g9.js'></script>
-<script>
-    // g9 is now defined
-
-
-const initialData = {
+export const initialData = {
     radius: 200,
     angle: 0
 }
@@ -38,7 +8,7 @@ const sin = Math.sin;
 const cos = Math.cos;
 const PI = Math.PI;
 
-function render(data, ctx){
+export function render(data, ctx){
     const point = (x,y, options={}) => {
         if (undefined === options.fill) options.fill = 'green';
         if (undefined === options.r) options.r = 10;
@@ -60,12 +30,4 @@ function render(data, ctx){
     }
 }
 
-g9(initialData, render)
-    .align('center', 'center')
-    .insertInto('body')
-
-</script>
-
-</body>
-</html>
 

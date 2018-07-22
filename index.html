@@ -1,6 +1,8 @@
+
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8"/>
     <title>G9</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,7 +17,9 @@
         <a href="?art=CounterRotatingHelix">Counter rotating helix</a>
     </div>
 </div>
-<div id="svg-container"></div>
+<div id="svg-container">
+    <!-- <svg></svg> be here (created by g9) -->
+</div>
 
 <script src='https://cdnjs.cloudflare.com/ajax/libs/g9/1.0.16/g9.js'></script>
 <script type="module">
@@ -24,22 +28,14 @@ const art = (
     new URLSearchParams(window.location.search).get('art')
     || 'CounterRotatingHelix'
 );
+async function main() {
+    const artModule = await import(`./art/${art}.js`);
+    g9(artModule.initialData, artModule.render)
+        .align('center', 'center')
+        .insertInto('#svg-container')
+}
+main();
 
-import {initialData, render} from "./art/CounterRotatingHelix.js"
-g9(initialData, render)
-    .align('center', 'center')
-    .insertInto('#svg-container');
-
-// async function main() {
-//     console.log('a')
-//     const artModule = await import(`./art/${art}.js`);
-//     console.log('b')
-
-//     g9(artModule.initialData, artModule.render)
-//         .align('center', 'center')
-//         .insertInto('#svg-container')
-// }
-// main();
 </script>
 
 </body>

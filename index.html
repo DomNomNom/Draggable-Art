@@ -13,9 +13,8 @@
     <h2 id="chrome-is-preferred" hidden>This website is best viewed with Chrome browser. (Dom wants to use fancy JS features)</h2>
     <div>
         How about some more?
-        <a href="?art=blah">blah</a>
-        <a href="?art=nope">nope</a>
         <a href="?art=CounterRotatingHelix">Counter rotating helix</a>
+        <a href="?art=SpaceDistortion">Space Distortion</a>
     </div>
 </div>
 <div id="svg-container">
@@ -31,9 +30,10 @@ const art = (
 );
 async function main() {
     const artModule = await import(`./art/${art}.js`);
-    g9(artModule.initialData, artModule.render)
+    const canvas = g9(artModule.initialData, artModule.render)
         .align('center', 'center')
         .insertInto('#svg-container')
+    window.canvas = canvas;  // canvas.getData() to be able to get the current values;
 }
 main();
 

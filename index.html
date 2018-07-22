@@ -10,6 +10,7 @@
 
 <div id="header">
     <h1>Try dragging stuff around!</h1>
+    <h2 id="chrome-is-preferred" hidden>This website is best viewed with Chrome browser. (Dom wants to use fancy JS features)</h2>
     <div>
         How about some more?
         <a href="?art=blah">blah</a>
@@ -36,6 +37,14 @@ async function main() {
 }
 main();
 
+</script>
+
+<script type="text/javascript">
+// Compatibility bullshit.
+const isChrome = !!window.chrome && !!window.chrome.webstore;
+if (!isChrome) {
+    document.getElementById('chrome-is-preferred').hidden = false;
+}
 </script>
 
 </body>

@@ -1,11 +1,11 @@
-import {sin,cos,PI,TAU} from './util.js';
+import {sin,cos,TAU} from './util.js';
 
 export const initialData = {
     radius: 200,
     angle: 0
 }
 
-export function render(data, ctx){
+export function render(data, ctx) {
     const point = (x,y, options={}) => {
         if (undefined === options.fill) options.fill = 'green';
         if (undefined === options.r) options.r = 10;
@@ -14,8 +14,8 @@ export function render(data, ctx){
     };
 
     const sides = 10
-    for (let i=0; i<sides; i++){
-        const anglePerSide = 2*PI / sides
+    for (let i=0; i<sides; i++) {
+        const anglePerSide = TAU / sides
         const a = data.angle + i*anglePerSide
         const r1 = data.radius
         point(r1 * cos( a), r1 * sin( a))

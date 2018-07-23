@@ -1,4 +1,4 @@
-import {sin,cos,sqrt,PI,TAU} from './util.js';
+import {sin,cos,sqrt,TAU} from './util.js';
 
 
 export const initialData = {
@@ -40,7 +40,7 @@ export function render(data, ctx) {
     const sides = 40;
     const numCocentrics = 3;
     for (let i=0; i<sides; i++){
-        const anglePerSide = 2*PI / sides;
+        const anglePerSide = TAU / sides;
         const a = i*anglePerSide;
         for (let j=0; j<numCocentrics; ++j) {
             const r = (j+1) * 130;

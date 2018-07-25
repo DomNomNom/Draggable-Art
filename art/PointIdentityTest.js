@@ -8,7 +8,7 @@ export const initialData = {
 export function render(data, ctx) {
     const point = (x,y, options={}) => {
         if (undefined === options.fill) options.fill = 'green';
-        if (undefined === options.r) options.r = 10;
+        if (undefined === options.r) options.r = 20;
         ctx.point(x,y, options)
     };
 

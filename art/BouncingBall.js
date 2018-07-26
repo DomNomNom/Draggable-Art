@@ -16,7 +16,7 @@ export const initialData = {
 //
 
 const gravity = 3000;  // positive = down
-const simulationPeriod = 2.5;
+const simulationPeriod = 3.5;
 const timeStep = 0.13;  // dt
 const ballR = 40;  // Ball radius
 const bounceFactor = .8;  // scaling down of velocity on bounce

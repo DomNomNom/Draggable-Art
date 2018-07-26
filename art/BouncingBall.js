@@ -17,8 +17,8 @@ export const initialData = {
 
 const gravity = 3000;  // positive = down
 const simulationPeriod = 2.5;
-const timeStep = 0.05;
-const ballR = 20;  // Ball radius
+const timeStep = 0.13;  // dt
+const ballR = 40;  // Ball radius
 const bounceFactor = .8;  // scaling down of velocity on bounce
 
 let simulationBoxWd = 100;
@@ -69,15 +69,15 @@ function handleFloorCeilingCollision(data, intersectionTime) {
 
 // Returns a new data object representing the world after evolving for dt seconds.
 function simulate(data, dt) {
+    if (dt == 0) {
+        return data;
+    }
+
     // min/max coordinates for the ball's center.
     const minX = ballR;
     const minY = ballR;
     const maxX = simulationBoxWd - ballR;
     const maxY = simulationBoxHt - ballR;
-
-    if (dt == 0) {
-        return data;
-    }
 
     // Intersection with vertical walls.
     const intersects = [
@@ -107,7 +107,7 @@ function simulateUntilTime(data, animationTime) {
 }
 function generateStates(data) {
     const states = [data];
-    for (const i of range(1+simulationPeriod / timeStep)) {
+    for (const i of range(simulationPeriod / timeStep)) {
         data = simulate(data, timeStep);
         states.push(data);
     }
@@ -120,35 +120,39 @@ function generateStates(data) {
 //
 
 function strokeWidth(i) {
-    return 1+20*pow(2, -i*.05);
+    return 1+25*pow(2, -i*.09);
 }
-export function render(data, ctx) {
-
-    const states = generateStates(data);  // The physics simulation sampled at constant-time intervals
-
-    const point = (x,y, options={}) => {
-        if (undefined === options.r) options.r = 20;
-        ctx.point(x,y, options);
-    };
-    for (let i=0; i<states.length-1; ++i) {
-        const now = states[i];
-        const next = states[i+1];
+function renderStates(states, ctx) {
+    const velLineScale = .003;
+    for (let i=0; i<states.length; ++i) {
+        const data = states[i];   // Note: this is a different variable the
+        const wd = strokeWidth(i);
         ctx.line(
-            now.x, now.y,
-            next.x, next.y, {
-                'stroke-width': strokeWidth(i),
-                'stroke': 'rgba(10, 222, 10, .5)',
+            data.x,
+            data.y,
+            data.x + wd*velLineScale*data.vx,
+            data.y + wd*velLineScale*data.vy,
+            {
+                'stroke-width': wd,
+                'stroke': 'rgba(10, 222, 10, .3)',
                 'stroke-linecap': 'round',
                 affects: ['vx', 'vy'],
             }
         );
+        ctx.point (
+            data.x,
+            data.y,
+            {
+                'r': i? wd : 1.1*wd,
+                'fill': i? 'rgba(100, 220, 10, .3)' : 'rgba(222, 10, 10, .7)',
+                affects: i? ['vx', 'vy'] : ['x', 'y'],
+            }
+        );
     }
-    for (let i=1; i<states.length; ++i) {
-        const data = states[i];
-        point (data.x, data.y, {fill: 'red', r: .1*strokeWidth(i), affects: ['vx', 'vy']});
-    }
-    point (data.x, data.y, {fill: 'red', affects: ['x', 'y']});
-
+}
+export function render(data, ctx) {
+    const states = generateStates(data);  // The physics simulation sampled at constant-time intervals
+    renderStates(states, ctx);
 }
 
 //

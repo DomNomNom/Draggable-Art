@@ -10,8 +10,6 @@ export const initialData = {
     vy: 1,
 };
 
-// export const initialData = {vx: 717.7753278242701, vy: -350.7311260633871, x: 62.00000000246337, y: 828.9999999963994};
-
 //
 // Physics Simulation
 //
@@ -65,6 +63,10 @@ function handleWallCollision(data, intersectionTime) {
 }
 function handleFloorCeilingCollision(data, intersectionTime) {
     const dataAtHit = simulateWithoutCollisions(data, intersectionTime);
+    if (intersectionTime < 0.001 && Math.abs(data.vy) < 1.1) {
+        dataAtHit.vy = -10.1;  // HAAX: To stop if falling through the floor.
+        return dataAtHit;
+    }
     dataAtHit.y = clamp(dataAtHit.y, ballR, simulationBoxHt - ballR);
     dataAtHit.vy *= -bounceFactor;
     return dataAtHit;

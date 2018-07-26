@@ -88,21 +88,25 @@ function simulate(data, dt) {
 }
 
 function strokeWidth(i) {
-    return 1+20*pow(2, -i*.03);
+    return 1+20*pow(2, -i*.05);
 }
-export function render(data, ctx) {
-    const point = (x,y, options={}) => {
-        if (undefined === options.r) options.r = 20;
-        ctx.point(x,y, options);
-    };
 
-    point (data.x, data.y, {fill: 'red', affects: ['x', 'y']});
+function generateStates(data) {
     const states = [data];
     for (const i of range(simulationPeriod / timeStep)) {
         data = simulate(data, timeStep);
         states.push(data);
-        point (data.x, data.y, {fill: 'green', r: 1*strokeWidth(i), affects: ['vx', 'vy']});
     }
+    return states;
+}
+export function render(data, ctx) {
+
+    const states = generateStates(data);  // The physics simulation sampled at constant-time intervals
+
+    const point = (x,y, options={}) => {
+        if (undefined === options.r) options.r = 20;
+        ctx.point(x,y, options);
+    };
     for (let i=0; i<states.length-1; ++i) {
         const now = states[i];
         const next = states[i+1];
@@ -116,6 +120,12 @@ export function render(data, ctx) {
             }
         );
     }
+    for (let i=1; i<states.length; ++i) {
+        const data = states[i];
+        point (data.x, data.y, {fill: 'red', r: .1*strokeWidth(i), affects: ['vx', 'vy']});
+    }
+    point (data.x, data.y, {fill: 'red', affects: ['x', 'y']});
+
 }
 
 function renderAnimation(time, canvas) {

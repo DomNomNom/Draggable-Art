@@ -10,6 +10,7 @@ export const initialData = {
     vy: 1,
 };
 
+// export const initialData = {vx: 717.7753278242701, vy: -350.7311260633871, x: 62.00000000246337, y: 828.9999999963994};
 
 //
 // Physics Simulation
@@ -21,8 +22,8 @@ const timeStep = 0.13;  // dt
 const ballR = 40;  // Ball radius
 const bounceFactor = .8;  // scaling down of velocity on bounce
 
-let simulationBoxWd = 100;
-let simulationBoxHt = 100;
+let simulationBoxWd = 1000;
+let simulationBoxHt = 1000;
 
 function reducePrecision(float, decimals) {
     return Number.parseFloat(float.toFixed(decimals));
@@ -32,16 +33,20 @@ function getIntersectionTimeX(data, wallX) {
     // Note: We downsample the the distance from the wall, otherwise we get bad floating point behavior and the ball goes through the wall.
     return reducePrecision(wallX-data.x, 10) / data.vx;
 }
-function getIntersectionTimeY(data, floorY) {
+function getIntersectionTimesY(data, floorY) {
     // 0.5*gravity*dt*dt + data.vy * dt - dy = 0
-    return solveQuadratic(.5*gravity, data.vy, data.y - floorY);
+    return quadraticSolutions(.5*gravity, data.vy, data.y - floorY);
 }
 // Solves a quadratic equation of the form `a*x*x + b*x + c = 0`
 // Returns the most positive solution and in cases where there is no real solution, return null.
-function solveQuadratic(a, b, c) {
+function quadraticSolutions(a, b, c) {
     const determinant = b*b - (4 * a * c);
-    if (determinant < 0) return null;
-    return (-1 * b + Math.sqrt(determinant)) / (2 * a);
+    if (determinant < 0) return [];
+    if (determinant == 0) return [(-1 * b) / (2 * a)];
+    return [
+        (-1 * b + Math.sqrt(determinant)) / (2 * a),
+        (-1 * b - Math.sqrt(determinant)) / (2 * a),
+    ];
 }
 
 function simulateWithoutCollisions(data, dt) {
@@ -60,10 +65,8 @@ function handleWallCollision(data, intersectionTime) {
 }
 function handleFloorCeilingCollision(data, intersectionTime) {
     const dataAtHit = simulateWithoutCollisions(data, intersectionTime);
+    dataAtHit.y = clamp(dataAtHit.y, ballR, simulationBoxHt - ballR);
     dataAtHit.vy *= -bounceFactor;
-    if (reducePrecision(dataAtHit.vy, 3) == 0) {
-        dataAtHit.vy = 0;
-    }
     return dataAtHit;
 }
 
@@ -83,8 +86,8 @@ function simulate(data, dt) {
     const intersects = [
         {t: getIntersectionTimeX(data, minX), handleCollision: handleWallCollision},
         {t: getIntersectionTimeX(data, maxX), handleCollision: handleWallCollision},
-        {t: getIntersectionTimeY(data, minY), handleCollision: handleFloorCeilingCollision},
-        {t: getIntersectionTimeY(data, maxY), handleCollision: handleFloorCeilingCollision},
+        ...getIntersectionTimesY(data, minY).map(t => {return {t, handleCollision: handleFloorCeilingCollision}; }),
+        ...getIntersectionTimesY(data, maxY).map(t => {return {t, handleCollision: handleFloorCeilingCollision}; }),
     ].filter(({t}) => t!==null && 0<t && t<=dt).sort((a,b) => a.t-b.t);
     if (intersects.length) {
         const intersect = intersects[0];
@@ -94,7 +97,7 @@ function simulate(data, dt) {
     }
 
     const out = simulateWithoutCollisions(data, dt);
-    // if (out.x < minX) debugger
+    // if (out.y > maxY) debugger
     return out
 }
 

@@ -3,13 +3,13 @@ import {range, clamp, pow} from './util.js';
 export const initialData = {
     x: 200,
     y: 100,
-    vx: -50,
+    vx: -500,
     vy: 1,
 };
 
-const gravity = 10;  // positive = down
-const simulationPeriod = 20;
-const timeStep = 0.9;
+const gravity = 3000;  // positive = down
+const simulationPeriod = 2.5;
+const timeStep = 0.05;
 const ballR = 20;  // Ball radius
 const bounceFactor = .8;  // scaling down of velocity on bounce
 
@@ -87,10 +87,13 @@ function simulate(data, dt) {
     return out
 }
 
-function strokeWidth(i) {
-    return 1+20*pow(2, -i*.05);
-}
 
+function simulateUntilTime(data, animationTime) {
+    for (const i of range(animationTime / timeStep)) {
+        data = simulate(data, timeStep);
+    }
+    return simulate(data, animationTime % timeStep);
+}
 function generateStates(data) {
     const states = [data];
     for (const i of range(simulationPeriod / timeStep)) {
@@ -98,6 +101,11 @@ function generateStates(data) {
         states.push(data);
     }
     return states;
+}
+
+
+function strokeWidth(i) {
+    return 1+20*pow(2, -i*.05);
 }
 export function render(data, ctx) {
 
@@ -128,8 +136,20 @@ export function render(data, ctx) {
 
 }
 
-function renderAnimation(time, canvas) {
-
+let animatedBall;
+function renderAnimation(animationTime, canvas) {
+    if (!animatedBall) {
+        // animatedBall = document.createElement('circle')
+        animatedBall = document.createElementNS("http://www.w3.org/2000/svg",'circle');
+        canvas.node.insertBefore(animatedBall, canvas.node.firstElementChild);
+    }
+    const ballData = simulateUntilTime(canvas.getData(), animationTime % simulationPeriod);
+    animatedBall.style['r'] = ballR;
+    animatedBall.style['fill'] = 'steelblue';
+    animatedBall.style['cx'] = ballData.x;
+    animatedBall.style['cy'] = ballData.y;
+    animatedBall.style['type'] = 'point';
+    animatedBall.style['stack'] = '0';
 }
 function handleResize(canvas) {
     const boundingRect = canvas.node.getBoundingClientRect();
@@ -139,7 +159,7 @@ function handleResize(canvas) {
 }
 {
     let canvas;  // HACK: global scoping fuckery.
-    function animationLoop(time) {
+    function animationLoop(time_ms) {
         if (!window.canvas) return;
         if (!canvas) {
             // first render
@@ -148,6 +168,7 @@ function handleResize(canvas) {
             new ResizeObserver(() => { handleResize(canvas); }).observe(canvas.node);
             handleResize(canvas);
         }
+        renderAnimation(time_ms / 1000, canvas);
         requestAnimationFrame(animationLoop)
     }
     requestAnimationFrame(animationLoop)

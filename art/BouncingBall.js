@@ -84,6 +84,9 @@ function simulate(data, dt) {
     const maxX = simulationBoxWd - ballR;
     const maxY = simulationBoxHt - ballR;
 
+    data.x = clamp(data.x, minX+1e-9, maxX-1e-9);
+    data.y = clamp(data.y, minY+1e-9, maxY-1e-9);
+
     // Intersection with vertical walls.
     const intersects = [
         {t: getIntersectionTimeX(data, minX), handleCollision: handleWallCollision},
@@ -94,13 +97,10 @@ function simulate(data, dt) {
     if (intersects.length) {
         const intersect = intersects[0];
         const dataAtHit = intersect.handleCollision(data, intersect.t);
-        // if (new Error().stack.split('\n').length > 10)    debugger;
         return simulate(dataAtHit, dt - intersect.t);
     }
 
-    const out = simulateWithoutCollisions(data, dt);
-    // if (out.y > maxY) debugger
-    return out
+    return simulateWithoutCollisions(data, dt);
 }
 
 

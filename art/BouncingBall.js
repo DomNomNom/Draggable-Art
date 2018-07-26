@@ -1,11 +1,19 @@
 import {range, clamp, pow} from './util.js';
 
+//
+// The data that will be fed into simulate()
+//
 export const initialData = {
     x: 200,
     y: 100,
     vx: -500,
     vy: 1,
 };
+
+
+//
+// Physics Simulation
+//
 
 const gravity = 3000;  // positive = down
 const simulationPeriod = 2.5;
@@ -58,6 +66,8 @@ function handleFloorCeilingCollision(data, intersectionTime) {
     }
     return dataAtHit;
 }
+
+// Returns a new data object representing the world after evolving for dt seconds.
 function simulate(data, dt) {
     // min/max coordinates for the ball's center.
     const minX = ballR;
@@ -68,6 +78,7 @@ function simulate(data, dt) {
     if (dt == 0) {
         return data;
     }
+
     // Intersection with vertical walls.
     const intersects = [
         {t: getIntersectionTimeX(data, minX), handleCollision: handleWallCollision},
@@ -96,13 +107,17 @@ function simulateUntilTime(data, animationTime) {
 }
 function generateStates(data) {
     const states = [data];
-    for (const i of range(simulationPeriod / timeStep)) {
+    for (const i of range(1+simulationPeriod / timeStep)) {
         data = simulate(data, timeStep);
         states.push(data);
     }
     return states;
 }
 
+
+//
+// Rendering the path for g9 interactivity.
+//
 
 function strokeWidth(i) {
     return 1+20*pow(2, -i*.05);
@@ -135,6 +150,10 @@ export function render(data, ctx) {
     point (data.x, data.y, {fill: 'red', affects: ['x', 'y']});
 
 }
+
+//
+// Bouncing ball animation and resize-handling
+//
 
 let animatedBall;
 function renderAnimation(animationTime, canvas) {

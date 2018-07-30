@@ -50,7 +50,7 @@ function renderSamplesAsPolarPlot(samples, data, ctx) {
                 lastPos[0],
                 lastPos[1],
                 {
-                    'stroke-width': 0.01 * data.drawBoxRadius,
+                    'stroke-width': 0.01 * abs(data.drawBoxRadius),
                     'stroke': 'steelblue',
                     'stroke-linecap': 'round',
                     affects: ['winding'],
@@ -59,6 +59,29 @@ function renderSamplesAsPolarPlot(samples, data, ctx) {
         }
         lastPos = [x,y];
     }
+
+    const averageX = totalX / samples.length;
+    const averageY = totalY / samples.length
+    const lineRadius = 0.1 * data.drawBoxRadius;
+    const crossStyle = {
+        'stroke': 'rgba(210, 230, 200, .5)',
+        'stroke-width': 0.02 * abs(data.drawBoxRadius),
+        affects: ['winding'],
+    };
+    ctx.line(
+        averageX - lineRadius,
+        averageY,
+        averageX + lineRadius,
+        averageY,
+        crossStyle,
+    )
+    ctx.line(
+        averageX,
+        averageY - lineRadius,
+        averageX,
+        averageY + lineRadius,
+        crossStyle,
+    )
 }
 
 function renderSamplesAsWaveform(samples, data, ctx) {
@@ -71,7 +94,7 @@ function renderSamplesAsWaveform(samples, data, ctx) {
                 data.drawBoxRadius * lastPos[0],
                 data.drawBoxRadius * lastPos[1],
                 {
-                    'stroke-width': 0.04 * data.drawBoxRadius,
+                    'stroke-width': 0.03 * abs(data.drawBoxRadius),
                     'stroke': 'steelblue',
                     'stroke-linecap': 'round',
                     affects: ['drawBoxRadius'],
